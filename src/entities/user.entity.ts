@@ -4,6 +4,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { COUNTRIES } from '../constants/countries.constants';
 import { UserRole } from './userRole.entity';
 import { Gender, UserStatus } from '../constants/user.constants';
+import { TransportCard } from './transportCard.entity';
 
 @Entity('users')
 export class User extends AbstractEntity {
@@ -87,4 +88,8 @@ export class User extends AbstractEntity {
   // USER ROLES
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   userRoles: UserRole[];
+
+  // TRANSPORT CARDS
+  @OneToMany(() => TransportCard, (transportCard) => transportCard.user)
+  transportCards: TransportCard[];
 }

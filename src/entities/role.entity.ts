@@ -1,19 +1,19 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { AbstractEntity } from './index';
-import { RoleStatus, RoleTypes } from '../constants/role.constants';
 import { UserRole } from './userRole.entity';
+import { RoleStatus } from '../constants/role.constants';
+import { RolePermission } from './rolePermission.entity';
 
 @Entity('roles')
 export class Role extends AbstractEntity {
   // NAME
   @Column({
     name: 'name',
-    type: 'enum',
-    enum: RoleTypes,
+    type: 'varchar',
     nullable: false,
     unique: true,
   })
-  name: RoleTypes;
+  name: string;
 
   // DESCRIPTION
   @Column({
@@ -22,14 +22,6 @@ export class Role extends AbstractEntity {
     nullable: true,
   })
   description: string;
-
-  // LABEL
-  @Column({
-    name: 'label',
-    type: 'varchar',
-    nullable: true,
-  })
-  label: string;
 
   // STATUS
   @Column({
@@ -47,4 +39,8 @@ export class Role extends AbstractEntity {
   // USER ROLES
   @OneToMany(() => UserRole, (userRole) => userRole.role)
   userRoles: UserRole[];
+
+  // ROLE PERMISSIONS
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role,)
+  rolePermissions: RolePermission[];
 }
