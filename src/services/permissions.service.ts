@@ -41,11 +41,16 @@ export class PermissionsService {
   /**
    * FETCH PERMISSIONS
    */
-  async fetchPermissions(
-    page: number,
-    size: number,
-    condition: FindOptionsWhere<Permission> | FindOptionsWhere<Permission>[]
-  ): Promise<Pagination<Permission>> {
+  async fetchPermissions({
+    page,
+    size,
+    condition,
+  }: {
+    page: number;
+    size: number;
+    condition: FindOptionsWhere<Permission> | FindOptionsWhere<Permission>[];
+  }): Promise<Pagination<Permission>> {
+    // GET PAGINATION
     const { take, skip } = getPagination({ page, size });
 
     // FETCH PERMISSIONS

@@ -16,12 +16,12 @@ export class TransportCard extends AbstractEntity {
 
   // CARD NO
   @Column({
-    name: 'card_no',
+    name: 'card_number',
     type: 'varchar',
     length: 255,
     nullable: true,
   })
-  cardNo: string;
+  cardNumber: string;
 
   // USER ID
   @Column({
