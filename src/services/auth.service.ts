@@ -117,7 +117,9 @@ export class AuthService {
    * @param user
    * @returns
    */
-  async login(user: Partial<User>): Promise<{ user: User; token: string }> {
+  async login(
+    user: Partial<User>
+  ): Promise<{ user: Partial<User>; token: string }> {
     // VALIDATE USER
     const { error, value } = validateLogin(user);
 

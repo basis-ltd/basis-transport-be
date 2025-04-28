@@ -17,4 +17,11 @@ router.delete(
   transportCardController.deleteTransportCard
 );
 
+// UPDATE TRANSPORT CARD
+router.patch(
+  '/:id',
+  authMiddleware,
+  transportCardController.updateTransportCard
+);
+
 export default router;

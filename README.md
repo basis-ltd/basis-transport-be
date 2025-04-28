@@ -89,23 +89,23 @@ Let me know if you want to add more details or further customize the documentati
 
 ## Environment Variables
 
-Create a `.env` file in the root directory. Here's an example of what it might look like:
+Create a `.env` file in the root directory with the following variables:
 
 ```env
 # .env.example
 
 # Server
-PORT=3000
+PORT=5000
 
 # Database
 DB_HOST=localhost
 DB_PORT=5432
-DB_USERNAME=your_db_user
-DB_PASSWORD=your_db_password
-DB_NAME=basis_transport
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=basis-transport
 
 # JWT
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=your-jwt-secret
 
 # Other
 NODE_ENV=development
@@ -160,3 +160,79 @@ npm start
 ## License
 
 [ISC](LICENSE)
+
+## Features
+
+- User Authentication
+- Role-based Access Control
+- Transport Card Management
+- Automated Audit Logging
+
+## Audit Trail System
+
+The system includes a comprehensive audit trail feature that automatically logs changes when entities are updated or deleted:
+
+- **What**: Records old values and new values for each change
+- **When**: Timestamps each change (via `createdAt` field)
+- **Who**: Tracks which user made the change
+- **How**: Uses decorator patterns to transparently capture changes
+
+### Implementation
+
+The audit system consists of:
+
+1. **AuditLog Entity**: Stores audit records with action type (create/update/delete), entity information, old/new values, and user ID
+2. **AuditLogService**: Provides methods to create audit logs and retrieve entity history
+3. **Audit Decorators**: `@AuditUpdate` and `@AuditDelete` decorators that can be applied to service methods
+
+### Usage Example
+
+To enable audit logging on a service method:
+
+```typescript
+@AuditUpdate({
+  entityType: 'EntityName',
+  getEntityId: (args) => args[0], // First parameter is the ID
+  getUserId: (args) => args[1]?.userId // Extract userId from method arguments
+})
+async updateEntity(id: UUID, data: Partial<Entity>): Promise<Entity> {
+  // Method implementation
+}
+
+@AuditDelete({
+  entityType: 'EntityName',
+  getEntityId: (args) => args[0], // First parameter is the ID
+  getUserId: (args) => args[1]?.userId // Extract userId from method arguments
+})
+async deleteEntity(id: UUID, metadata?: { userId?: UUID }): Promise<void> {
+  // Method implementation
+}
+```
+
+The audit system will automatically:
+1. Capture the entity's state before changes
+2. Record the user who made the change (from method arguments or AuditContext)
+3. Store the operation type (update/delete)
+4. Save the data in the audit_logs table
+
+### Viewing Audit History
+
+The `AuditLogService` provides methods to retrieve audit logs:
+
+```typescript
+// Fetch all logs with filtering options
+const { logs, total } = await auditLogService.fetchAuditLogs(
+  page,
+  limit,
+  entityType,
+  entityId,
+  userId,
+  startDate,
+  endDate
+);
+
+// Fetch history for a specific entity
+const history = await auditLogService.fetchEntityHistory(entityType, entityId);
+```
+
+This audit trail implementation ensures comprehensive change tracking without significant performance impact, using decorators to maintain separation of concerns.

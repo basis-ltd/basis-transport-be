@@ -17,6 +17,7 @@ import {
   getPagingData,
   Pagination,
 } from '../helpers/pagination.helper';
+import { AuditDelete, AuditUpdate } from '../helpers/auditDecorator';
 
 export class TransportCardService {
   private readonly transportCardRepository: Repository<TransportCard>;
@@ -103,34 +104,63 @@ export class TransportCardService {
   /**
    * DELETE TRANSPORT CARD
    */
-  async deleteTransportCard(id: UUID): Promise<void> {
-    const transportCard = await this.getTransportCardById(id);
+  @AuditDelete({
+    entityType: 'TransportCard',
+    getEntityId: (args) => args[0],
+    getUserId: (args) => args[1]?.userId
+  })
+  async deleteTransportCard(
+    id: UUID,
+    metadata?: { userId?: UUID }
+  ): Promise<void> {
+    try {
+      const transportCard = await this.getTransportCardById(id);
 
-    await this.transportCardRepository.delete(transportCard?.id);
+      if (!transportCard) {
+        throw new NotFoundError('Transport card not found');
+      }
+
+      await this.transportCardRepository.delete(transportCard.id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
    * UPDATE TRANSPORT CARD
    */
+  @AuditUpdate({
+    entityType: 'TransportCard',
+    getEntityId: (args) => args[0],
+    getUserId: (args) => args[1]?.userId
+  })
   async updateTransportCard(
     id: UUID,
     transportCard: Partial<TransportCard>
   ): Promise<TransportCard> {
-    const { error, value } = validateUpdateTransportCard(transportCard);
+    try {
+      const { error, value } = validateUpdateTransportCard(transportCard);
 
-    if (error) {
-      throw new ValidationError(error.message);
+      if (error) {
+        throw new ValidationError(error.message);
+      }
+
+      // CHECK IF TRANSPORT CARD EXISTS
+      const existingTransportCard = await this.getTransportCardById(id);
+
+      if (!existingTransportCard) {
+        throw new NotFoundError('Transport card not found');
+      }
+
+      // UPDATE TRANSPORT CARD
+      const updatedTransportCard = await this.transportCardRepository.save({
+        ...existingTransportCard,
+        ...value,
+      });
+
+      return updatedTransportCard;
+    } catch (error) {
+      throw error;
     }
-
-    // CHECK IF TRANSPORT CARD EXISTS
-    const existingTransportCard = await this.getTransportCardById(id);
-
-    // UPDATE TRANSPORT CARD
-    const updatedTransportCard = await this.transportCardRepository.save({
-      ...existingTransportCard,
-      ...value,
-    });
-
-    return updatedTransportCard;
   }
 }

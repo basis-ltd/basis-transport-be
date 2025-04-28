@@ -2,20 +2,24 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 
+const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT as number | undefined,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: DB_HOST,
+  port: DB_PORT as number | undefined,
+  username: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
   synchronize: true,
   logging: false,
   entities: [`${__dirname}/**/**/*.entity.{ts,js}`],
   migrations: [`${__dirname}/**/migrations/*.{ts,js}`],
   ssl: ['localhost', 'host.docker.internal'].includes(
-    String(process.env.DB_HOST)
+    String(DB_HOST)
   )
     ? false
-    : { rejectUnauthorized: false },
+    : {
+        rejectUnauthorized: false,
+      },
 });
