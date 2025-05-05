@@ -5,6 +5,7 @@ import auditRoutes from './auditLog.routes';
 import { auditContextMiddleware } from '../middlewares/auditContext.middleware';
 import locationRoutes from './location.routes';
 import tripRoutes from './trip.routes';
+import userTripRoutes from './userTrip.routes';
 
 const router = Router();
 
@@ -31,5 +32,8 @@ router.use('/locations', locationRoutes);
 
 // TRIP ROUTES
 router.use('/trips', tripRoutes);
+
+// USER TRIP ROUTES
+router.use('/user-trips', userTripRoutes);
 
 export default router;
