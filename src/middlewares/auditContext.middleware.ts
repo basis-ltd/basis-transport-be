@@ -16,12 +16,17 @@ export namespace AuditContext {
    */
   function getRequestId(req: Request): string {
     if (!req.headers[REQUEST_ID_KEY]) {
-      req.headers[REQUEST_ID_KEY] = `req-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+      req.headers[REQUEST_ID_KEY] = `req-${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 15)}`;
     }
     return req.headers[REQUEST_ID_KEY] as string;
   }
 
-  export function setCurrentUserId(req: Request, userId: UUID | undefined): void {
+  export function setCurrentUserId(
+    req: Request,
+    userId: UUID | undefined
+  ): void {
     const requestId = getRequestId(req);
     if (userId) {
       asyncLocalStorage.set(requestId, userId);
@@ -80,7 +85,7 @@ export const auditContextMiddleware = (
   if (authReq.user && authReq.user.id) {
     // Set the user ID in the audit context
     AuditContext.setCurrentUserId(req, authReq.user.id as UUID);
-    
+
     // Debug log
     console.debug(`AuditContext: Set user ID ${authReq.user.id} for request`);
   }

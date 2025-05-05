@@ -17,7 +17,7 @@ import {
   getPagingData,
   Pagination,
 } from '../helpers/pagination.helper';
-import { AuditDelete, AuditUpdate } from '../helpers/auditDecorator';
+import { AuditDelete, AuditUpdate } from '../decorators/auditLog.decorator';
 
 export class TransportCardService {
   private readonly transportCardRepository: Repository<TransportCard>;

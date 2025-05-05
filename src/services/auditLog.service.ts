@@ -3,6 +3,11 @@ import { AppDataSource } from '../data-source';
 import { AuditLog, AuditAction } from '../entities/auditLog.entity';
 import { Between, FindOptionsWhere } from 'typeorm';
 import { UUID } from '../types';
+import {
+  getPagination,
+  getPagingData,
+  Pagination,
+} from '../helpers/pagination.helper';
 
 /**
  * AUDIT LOG SERVICE
@@ -78,60 +83,56 @@ export class AuditLogService {
   /**
    * FIND AUDIT LOGS
    */
-  async fetchAuditLogs(
-    page: number = 1,
-    limit: number = 10,
-    entityType?: string,
-    entityId?: UUID,
-    createdById?: UUID,
-    startDate?: Date,
-    endDate?: Date
-  ): Promise<{ logs: AuditLog[]; total: number }> {
-    const condition: FindOptionsWhere<AuditLog> = {};
+  async fetchAuditLogs({
+    page = 0,
+    size = 10,
+    condition,
+  }: {
+    page: number;
+    size: number;
+    condition: FindOptionsWhere<AuditLog> | FindOptionsWhere<AuditLog>[];
+  }): Promise<Pagination<AuditLog>> {
+    // GET PAGINATION
+    const { skip, take } = getPagination({ page, size });
 
-    if (entityType) {
-      condition.entityType = entityType;
-    }
-
-    if (entityId) {
-      condition.entityId = entityId;
-    }
-
-    if (createdById) {
-      condition.createdById = createdById;
-    }
-
-    if (startDate && endDate) {
-      condition.createdAt = Between(startDate, endDate);
-    }
-
-    const [logs, total] = await this.auditLogRepository.findAndCount({
+    const auditLogs = await this.auditLogRepository.findAndCount({
       where: condition,
-      skip: (page - 1) * limit,
-      take: limit,
+      skip,
+      take,
       relations: {
         createdBy: true,
       },
       order: {
-        createdAt: 'DESC',
+        updatedAt: 'DESC',
       },
     });
 
-    return { logs, total };
+    return getPagingData({
+      data: auditLogs,
+      page,
+      size,
+    });
   }
 
   /**
    * FETCH ENTITY HISTORY
    */
-  async fetchEntityHistory(
-    entityType: string,
-    entityId: UUID
-  ): Promise<AuditLog[]> {
-    return this.auditLogRepository.find({
-      where: {
-        entityType,
-        entityId,
-      },
+  async fetchEntityHistory({
+    page = 0,
+    size = 10,
+    condition,
+  }: {
+    page: number;
+    size: number;
+    condition: FindOptionsWhere<AuditLog> | FindOptionsWhere<AuditLog>[];
+  }): Promise<Pagination<AuditLog>> {
+    // GET PAGINATION
+    const { skip, take } = getPagination({ page, size });
+
+    const auditLogs = await this.auditLogRepository.findAndCount({
+      where: condition,
+      skip,
+      take,
       relations: {
         createdBy: true,
       },
@@ -139,5 +140,11 @@ export class AuditLogService {
         createdAt: 'DESC',
       },
     });
+
+    return getPagingData({
+      data: auditLogs,
+      page,
+      size,
+    });
   }
-} 
+}

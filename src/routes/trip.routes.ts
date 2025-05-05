@@ -1,26 +1,27 @@
 import { Router } from 'express';
 import { TripController } from '../controllers/trip.controller';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 const router = Router();
 
 const tripController = new TripController();
 
 // CREATE TRIP
-router.post('/', tripController.createTrip);
+router.post('/', authMiddleware, tripController.createTrip);
 
 // UPDATE TRIP
-router.patch('/:id', tripController.updateTrip);
+router.patch('/:id', authMiddleware, tripController.updateTrip);
 
 // DELETE TRIP
-router.delete('/:id', tripController.deleteTrip);
+router.delete('/:id', authMiddleware, tripController.deleteTrip);
 
 // FETCH TRIPS
-router.get('/', tripController.fetchTrips);
+router.get('/', authMiddleware, tripController.fetchTrips);
 
 // GET TRIP BY ID
-router.get('/:id', tripController.getTripById);
+router.get('/:id', authMiddleware, tripController.getTripById);
 
 // GET TRIP BY REFERENCE ID
-router.get('/reference/:referenceId', tripController.getTripByReferenceId);
+router.get('/reference/:referenceId', authMiddleware, tripController.getTripByReferenceId);
 
 export default router;

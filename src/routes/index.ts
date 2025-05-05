@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes';
 import transportCardRoutes from './transportCard.routes';
-import auditRoutes from './audit.routes';
+import auditRoutes from './auditLog.routes';
 import { auditContextMiddleware } from '../middlewares/auditContext.middleware';
 import locationRoutes from './location.routes';
 import tripRoutes from './trip.routes';

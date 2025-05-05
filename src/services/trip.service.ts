@@ -11,7 +11,7 @@ import { Location } from '../entities/location.entity';
 import { User } from '../entities/user.entity';
 import { LogReferenceTypes } from '../constants/logs.constants';
 import { generateReferenceId } from '../helpers/string.helper';
-import { AuditDelete, AuditUpdate } from '../helpers/auditDecorator';
+import { AuditDelete, AuditUpdate } from '../decorators/auditLog.decorator';
 import { UUID } from '../types';
 import { getPagingData } from '../helpers/pagination.helper';
 import { getPagination, Pagination } from '../helpers/pagination.helper';
@@ -92,6 +92,7 @@ export class TripService {
     // CREATE TRIP
     const newTrip = this.tripRepository.save({
       ...value,
+      referenceId,
       locationFrom,
       locationTo,
       createdBy,
@@ -110,7 +111,11 @@ export class TripService {
     getEntityId: (args) => args[0],
     getUserId: (args) => args[1]?.createdById,
   })
-  async updateTrip(id: UUID, trip: Partial<Trip>): Promise<Trip> {
+  async updateTrip(
+    id: UUID,
+    trip: Partial<Trip>,
+    metadata?: { createdById?: UUID }
+  ): Promise<Trip> {
     // VALIDATE TRIP
     const { error, value } = updateTripValidation(trip);
     if (error) {
@@ -119,12 +124,12 @@ export class TripService {
 
     // CHECK IF TRIP EXISTS
     const existingTrip = await this.tripRepository.findOne({
-      where: { id: value?.id },
+      where: { id },
     });
 
     if (!existingTrip) {
       throw new NotFoundError('Trip not found', {
-        referenceId: value?.id,
+        referenceId: id,
         referenceType: LogReferenceTypes.TRIP,
       });
     }
@@ -252,6 +257,11 @@ export class TripService {
   async getTripByReferenceId(referenceId: string): Promise<Trip> {
     const trip = await this.tripRepository.findOne({
       where: { referenceId },
+      relations: {
+        locationFrom: true,
+        locationTo: true,
+        createdBy: true,
+      },
     });
 
     if (!trip) {

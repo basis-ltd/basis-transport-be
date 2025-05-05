@@ -13,7 +13,7 @@ import {
 } from '../helpers/pagination.helper';
 import { UUID } from '../types';
 import { LogReferenceTypes } from '../constants/logs.constants';
-import { AuditDelete, AuditUpdate } from '../helpers/auditDecorator';
+import { AuditDelete, AuditUpdate } from '../decorators/auditLog.decorator';
 
 export class LocationService {
   private readonly locationRepository: Repository<Location>;

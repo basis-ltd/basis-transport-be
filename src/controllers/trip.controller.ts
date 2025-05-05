@@ -3,7 +3,12 @@ import { TripService } from '../services/trip.service';
 import { AuthenticatedRequest } from '../types/auth.types';
 import { UUID } from '../types';
 import { Trip } from '../entities/trip.entity';
-import { Between, FindOptionsWhere } from 'typeorm';
+import {
+  Between,
+  FindOptionsWhere,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+} from 'typeorm';
 import { TripStatus } from '../constants/trip.constants';
 
 // INITIALIZE SERVICES
@@ -20,7 +25,7 @@ export class TripController {
 
       const newTrip = await tripService.createTrip({
         ...req.body,
-        createdById: user.id,
+        createdById: user?.id,
       });
       return res.status(201).json({
         message: 'Trip created successfully',
@@ -38,7 +43,13 @@ export class TripController {
     try {
       const { id } = req.params;
 
-      const updatedTrip = await tripService.updateTrip(id as UUID, req.body);
+      // LOAD USER
+      const { user } = req as AuthenticatedRequest;
+
+      const updatedTrip = await tripService.updateTrip(id as UUID, {
+        ...req.body,
+        createdById: user?.id,
+      });
 
       return res.status(200).json({
         message: 'Trip updated successfully',
@@ -107,11 +118,11 @@ export class TripController {
       }
 
       if (startTime) {
-        condition.startTime = new Date(startTime as string);
+        condition.startTime = MoreThanOrEqual(new Date(startTime as string));
       }
 
       if (endTime) {
-        condition.endTime = new Date(endTime as string);
+        condition.endTime = LessThanOrEqual(new Date(endTime as string));
       }
 
       if (startTime && endTime) {
