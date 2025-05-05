@@ -24,4 +24,14 @@ router.patch(
   transportCardController.updateTransportCard
 );
 
+// FETCH TRANSPORT CARDS
+router.get('/', authMiddleware, transportCardController.fetchTransportCards);
+
+// GET TRANSPORT CARD BY ID
+router.get(
+  '/:id',
+  authMiddleware,
+  transportCardController.getTransportCardById
+);
+
 export default router;

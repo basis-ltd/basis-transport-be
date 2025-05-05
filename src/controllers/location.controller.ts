@@ -96,7 +96,11 @@ export class LocationController {
   async deleteLocation(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      await locationService.deleteLocation(id as UUID);
+      const { user } = req as AuthenticatedRequest;
+
+      await locationService.deleteLocation(id as UUID, {
+        createdById: user?.id,
+      });
 
       return res.status(204).json({
         message: 'Location deleted successfully',
@@ -112,11 +116,10 @@ export class LocationController {
   async updateLocation(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const { user } = req as AuthenticatedRequest;
 
       const location = await locationService.updateLocation(
         id as UUID,
-        { ...req.body, createdById: user.id }
+        req.body
       );
 
       return res.status(200).json({

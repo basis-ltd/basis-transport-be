@@ -74,6 +74,9 @@ export class TransportCardService {
       where: condition,
       skip,
       take,
+      relations: {
+        createdBy: true,
+      },
     });
 
     return getPagingData({
@@ -89,6 +92,9 @@ export class TransportCardService {
   async getTransportCardById(id: UUID) {
     const transportCard = await this.transportCardRepository.findOne({
       where: { id },
+      relations: {
+        createdBy: true,
+      },
     });
 
     if (!transportCard) {
@@ -107,7 +113,7 @@ export class TransportCardService {
   @AuditDelete({
     entityType: 'TransportCard',
     getEntityId: (args) => args[0],
-    getUserId: (args) => args[1]?.createdById
+    getUserId: (args) => args[1]?.createdById,
   })
   async deleteTransportCard(
     id: UUID,
@@ -132,7 +138,7 @@ export class TransportCardService {
   @AuditUpdate({
     entityType: 'TransportCard',
     getEntityId: (args) => args[0],
-    getUserId: (args) => args[1]?.createdById
+    getUserId: (args) => args[1]?.createdById,
   })
   async updateTransportCard(
     id: UUID,

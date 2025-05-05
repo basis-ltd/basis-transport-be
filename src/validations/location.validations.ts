@@ -45,7 +45,6 @@ export const updateLocationValidation = (location: Partial<Location>) => {
         .optional(),
       coordinates: Joi.array().optional(),
     }).optional(),
-    createdById: Joi.string().uuid().optional(),
   });
 
   return schema.validate(location);

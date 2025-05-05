@@ -72,6 +72,9 @@ export class LocationService {
       take,
       skip,
       where: condition,
+      relations: {
+        createdBy: true,
+      }
     });
 
     // RETURN PAGINATION
@@ -84,6 +87,9 @@ export class LocationService {
   async getLocationById(id: UUID): Promise<Location> {
     const location = await this.locationRepository.findOne({
       where: { id },
+      relations: {
+        createdBy: true,
+      }
     });
 
     // IF LOCATION DOES NOT EXIST, THROW ERROR
@@ -106,9 +112,9 @@ export class LocationService {
     getEntityId: (args) => args[0],
     getUserId: (args) => args[1]?.createdById
   })
-  async deleteLocation(id: UUID): Promise<void> {
+  async deleteLocation(id: UUID, metadata?: { createdById?: UUID }): Promise<void> {
     const location = await this.getLocationById(id);
-    await this.locationRepository.delete(location);
+    await this.locationRepository.delete(location?.id);
   }
 
   /**

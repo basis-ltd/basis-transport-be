@@ -21,7 +21,6 @@ export const validateUpdateTransportCard = (
   const schema = Joi.object({
     name: Joi.string().optional(),
     cardNumber: Joi.string().optional(),
-    userId: Joi.string().uuid().optional(),
   });
 
   return schema.validate(transportCard);
