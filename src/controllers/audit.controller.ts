@@ -21,7 +21,7 @@ export class AuditController {
       const entityType = req.query.entityType as string;
       const entityId = req.query.entityId as UUID;
       const action = req.query.action as string;
-      const userId = req.query.userId as UUID;
+      const createdById = req.query.createdById as UUID;
       const startDate = req.query.startDate
         ? new Date(req.query.startDate as string)
         : undefined;
@@ -35,7 +35,7 @@ export class AuditController {
       if (entityType) condition.entityType = entityType;
       if (entityId) condition.entityId = entityId;
       if (action) condition.action = action as any;
-      if (userId) condition.userId = userId;
+      if (createdById) condition.createdById = createdById;
       if (startDate && endDate) {
         condition.createdAt = Between(startDate, endDate);
       }
@@ -45,7 +45,7 @@ export class AuditController {
         size,
         entityType,
         entityId,
-        userId,
+        createdById,
         startDate,
         endDate
       );

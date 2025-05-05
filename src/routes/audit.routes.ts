@@ -11,4 +11,4 @@ router.get('/', authMiddleware, auditController.fetchAuditLogs);
 // FETCH ENTITY HISTORY
 router.get('/entity/:entityType/:entityId', authMiddleware, auditController.fetchEntityHistory);
 
-export default router; 
+export default router;

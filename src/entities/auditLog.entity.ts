@@ -49,16 +49,17 @@ export class AuditLog extends AbstractEntity {
 
   @Column({
     type: 'uuid',
-    name: 'user_id',
+    name: 'created_by_id',
     nullable: true,
   })
-  userId?: UUID;
+  createdById?: UUID;
 
   // USER RELATION
   @ManyToOne(() => User, (user) => user.id, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
+    nullable: true,
   })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
-} 
+  @JoinColumn({ name: 'created_by_id' })
+  createdBy: User;
+}

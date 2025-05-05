@@ -23,7 +23,7 @@ export class AuditLogService {
     entityId: UUID,
     oldValues: any,
     newValues: any,
-    userId?: UUID
+    createdById?: UUID
   ): Promise<AuditLog> {
     const auditLog = new AuditLog();
     auditLog.action = action;
@@ -31,7 +31,7 @@ export class AuditLogService {
     auditLog.entityId = entityId;
     auditLog.oldValues = oldValues;
     auditLog.newValues = newValues;
-    auditLog.userId = userId;
+    auditLog.createdById = createdById;
 
     return this.auditLogRepository.save(auditLog);
   }
@@ -44,7 +44,7 @@ export class AuditLogService {
     entityId: UUID,
     oldValues: any,
     newValues: any,
-    userId?: UUID
+    createdById?: UUID
   ): Promise<AuditLog> {
     return this.createAuditLog(
       AuditAction.UPDATE,
@@ -52,7 +52,7 @@ export class AuditLogService {
       entityId,
       oldValues,
       newValues,
-      userId
+      createdById
     );
   }
 
@@ -63,7 +63,7 @@ export class AuditLogService {
     entityType: string,
     entityId: UUID,
     oldValues: any,
-    userId?: UUID
+    createdById?: UUID
   ): Promise<AuditLog> {
     return this.createAuditLog(
       AuditAction.DELETE,
@@ -71,7 +71,7 @@ export class AuditLogService {
       entityId,
       oldValues,
       {},
-      userId
+      createdById
     );
   }
 
@@ -83,7 +83,7 @@ export class AuditLogService {
     limit: number = 10,
     entityType?: string,
     entityId?: UUID,
-    userId?: UUID,
+    createdById?: UUID,
     startDate?: Date,
     endDate?: Date
   ): Promise<{ logs: AuditLog[]; total: number }> {
@@ -97,8 +97,8 @@ export class AuditLogService {
       condition.entityId = entityId;
     }
 
-    if (userId) {
-      condition.userId = userId;
+    if (createdById) {
+      condition.createdById = createdById;
     }
 
     if (startDate && endDate) {
@@ -109,6 +109,9 @@ export class AuditLogService {
       where: condition,
       skip: (page - 1) * limit,
       take: limit,
+      relations: {
+        createdBy: true,
+      },
       order: {
         createdAt: 'DESC',
       },
@@ -128,6 +131,9 @@ export class AuditLogService {
       where: {
         entityType,
         entityId,
+      },
+      relations: {
+        createdBy: true,
       },
       order: {
         createdAt: 'DESC',
