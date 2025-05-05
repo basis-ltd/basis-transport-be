@@ -15,4 +15,5 @@ export enum LogReferenceTypes {
   ROLE = 'ROLE',
   TRANSPORT_CARD = 'TRANSPORT_CARD',
   LOCATION = 'LOCATION',
+  TRIP = 'TRIP',
 }

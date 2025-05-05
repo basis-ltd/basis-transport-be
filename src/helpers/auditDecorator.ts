@@ -30,13 +30,13 @@ export function AuditUpdate(options: AuditOptions) {
         // Initialize audit log service
         const auditLogService = new AuditLogService();
         const entityId = options.getEntityId(args);
-        
+
         // Get userId from arguments or context
         let userId = options.getUserId ? options.getUserId(args) : undefined;
         if (!userId) {
           userId = AuditContext.getCurrentUserId();
         }
-        
+
         // Get entity before update
         let oldValues = {};
         try {
@@ -50,10 +50,10 @@ export function AuditUpdate(options: AuditOptions) {
         } catch (error) {
           console.error('Failed to get entity for audit log:', error);
         }
-        
+
         // Execute original method
         const result = await originalMethod.apply(this, args);
-        
+
         // Create audit log after operation completes
         try {
           await auditLogService.logUpdate(
@@ -66,7 +66,7 @@ export function AuditUpdate(options: AuditOptions) {
         } catch (error) {
           console.error('Error creating audit log (non-blocking):', error);
         }
-        
+
         return result;
       } catch (error) {
         console.error(`Error in ${options.entityType} update:`, error);
@@ -94,13 +94,13 @@ export function AuditDelete(options: AuditOptions) {
         // Initialize audit log service
         const auditLogService = new AuditLogService();
         const entityId = options.getEntityId(args);
-        
+
         // Get userId from arguments or context
         let userId = options.getUserId ? options.getUserId(args) : undefined;
         if (!userId) {
           userId = AuditContext.getCurrentUserId();
         }
-        
+
         // Get entity before deletion
         let oldValues = {};
         if (options.getEntity) {
@@ -118,7 +118,7 @@ export function AuditDelete(options: AuditOptions) {
             console.error('Failed to get entity for audit log:', error);
           }
         }
-        
+
         // Create audit log before deletion
         try {
           await auditLogService.logDelete(
@@ -128,12 +128,15 @@ export function AuditDelete(options: AuditOptions) {
             userId
           );
         } catch (error) {
-          console.error('Error creating delete audit log (non-blocking):', error);
+          console.error(
+            'Error creating delete audit log (non-blocking):',
+            error
+          );
         }
-        
+
         // Execute original method
         const result = await originalMethod.apply(this, args);
-        
+
         return result;
       } catch (error) {
         console.error(`Error in ${options.entityType} delete:`, error);
@@ -143,4 +146,4 @@ export function AuditDelete(options: AuditOptions) {
 
     return descriptor;
   };
-} 
+}
