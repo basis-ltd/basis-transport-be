@@ -64,7 +64,7 @@ Let me know if you want to add more details or further customize the documentati
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/basis-transport-be.git
+   git clone https://github.com/basis-ltd/basis-transport-be.git
    cd basis-transport-be
    ```
 
@@ -166,7 +166,56 @@ npm start
 - User Authentication
 - Role-based Access Control
 - Transport Card Management
+- Trip Management
+- User Trip Management
 - Automated Audit Logging
+
+## Trip and UserTrip Management
+
+The system supports comprehensive management of trips and user trips, enabling tracking of journeys, user participation, and real-time status updates.
+
+### Trip
+A **Trip** represents a scheduled or ongoing journey, including its route, status, and capacity.
+
+**Main fields:**
+- `referenceId`: Unique reference for the trip
+- `startTime`, `endTime`: Timestamps for trip duration
+- `locationFromId`, `locationToId`: Start and end locations
+- `createdById`: User who created the trip
+- `status`: Current status (e.g., PENDING, ACTIVE, COMPLETED)
+- `totalCapacity`: Maximum number of users
+- `currentLocation`: Geospatial location (if tracked)
+
+**Endpoints:**
+- `POST   /trips` — Create a new trip
+- `PATCH  /trips/:id` — Update a trip
+- `DELETE /trips/:id` — Delete a trip
+- `GET    /trips` — List trips (with filters)
+- `GET    /trips/:id` — Get trip by ID
+- `GET    /trips/reference/:referenceId` — Get trip by reference ID
+
+### UserTrip
+A **UserTrip** records a user's participation in a trip, including entry/exit locations and times.
+
+**Main fields:**
+- `userId`: The user on the trip
+- `tripId`: The trip being joined
+- `status`: User's trip status (e.g., IN_PROGRESS, COMPLETED)
+- `entranceLocation`, `exitLocation`: Geospatial points
+- `startTime`, `endTime`: When the user joined/left
+- `createdById`: Who recorded the entry
+
+**Endpoints:**
+- `POST   /user-trips` — Create a user trip (user boards a trip)
+- `PATCH  /user-trips/:id` — Update a user trip
+- `DELETE /user-trips/:id` — Delete a user trip
+- `GET    /user-trips` — List user trips (with filters)
+- `GET    /user-trips/:id` — Get user trip by ID
+
+### Example Usage
+- Create a trip, then allow users to join via user trips.
+- Track which users are on which trips, their entry/exit points, and trip status.
+- Use filters to query trips by status, location, or creator, and user trips by user, trip, or time range.
 
 ## Audit Trail System
 
@@ -193,7 +242,7 @@ To enable audit logging on a service method:
 @AuditUpdate({
   entityType: 'EntityName',
   getEntityId: (args) => args[0], // First parameter is the ID
-  getUserId: (args) => args[1]?.userId // Extract userId from method arguments
+  getUserId: (args) => args[1]?.createdById // Extract userId from method arguments
 })
 async updateEntity(id: UUID, data: Partial<Entity>): Promise<Entity> {
   // Method implementation
@@ -202,9 +251,9 @@ async updateEntity(id: UUID, data: Partial<Entity>): Promise<Entity> {
 @AuditDelete({
   entityType: 'EntityName',
   getEntityId: (args) => args[0], // First parameter is the ID
-  getUserId: (args) => args[1]?.userId // Extract userId from method arguments
+  getUserId: (args) => args[1]?.createdById // Extract userId from method arguments
 })
-async deleteEntity(id: UUID, metadata?: { userId?: UUID }): Promise<void> {
+async deleteEntity(id: UUID, metadata?: { createdById?: UUID }): Promise<void> {
   // Method implementation
 }
 ```
