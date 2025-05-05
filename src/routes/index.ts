@@ -3,6 +3,7 @@ import authRoutes from './auth.routes';
 import transportCardRoutes from './transportCard.routes';
 import auditRoutes from './audit.routes';
 import { auditContextMiddleware } from '../middlewares/auditContext.middleware';
+import locationRoutes from './location.routes';
 
 const router = Router();
 
@@ -23,5 +24,8 @@ router.use('/transport-cards', transportCardRoutes);
 
 // AUDIT ROUTES
 router.use('/audit-logs', auditRoutes);
+
+// LOCATION ROUTES
+router.use('/locations', locationRoutes);
 
 export default router;

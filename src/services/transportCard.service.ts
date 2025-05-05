@@ -43,7 +43,7 @@ export class TransportCardService {
     if (existingTransportCard) {
       throw new ConflictError('Transport card already exists', {
         referenceType: LogReferenceTypes.TRANSPORT_CARD,
-        userId: existingTransportCard?.userId,
+        userId: existingTransportCard?.createdById,
         referenceId: existingTransportCard?.id,
       });
     }
@@ -107,11 +107,11 @@ export class TransportCardService {
   @AuditDelete({
     entityType: 'TransportCard',
     getEntityId: (args) => args[0],
-    getUserId: (args) => args[1]?.userId
+    getUserId: (args) => args[1]?.createdById
   })
   async deleteTransportCard(
     id: UUID,
-    metadata?: { userId?: UUID }
+    metadata?: { createdById?: UUID }
   ): Promise<void> {
     try {
       const transportCard = await this.getTransportCardById(id);
@@ -132,7 +132,7 @@ export class TransportCardService {
   @AuditUpdate({
     entityType: 'TransportCard',
     getEntityId: (args) => args[0],
-    getUserId: (args) => args[1]?.userId
+    getUserId: (args) => args[1]?.createdById
   })
   async updateTransportCard(
     id: UUID,

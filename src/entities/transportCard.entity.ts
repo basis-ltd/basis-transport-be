@@ -25,11 +25,11 @@ export class TransportCard extends AbstractEntity {
 
   // USER ID
   @Column({
-    name: 'user_id',
+    name: 'created_by_id',
     type: 'uuid',
     nullable: false,
   })
-  userId: UUID;
+  createdById: UUID;
 
   /**
    * RELATIONS
@@ -39,6 +39,6 @@ export class TransportCard extends AbstractEntity {
   @ManyToOne(() => User, (user) => user.id, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @JoinColumn({ name: 'created_by_id' })
+  createdBy: User;
 }

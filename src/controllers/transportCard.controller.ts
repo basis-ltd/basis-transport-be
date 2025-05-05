@@ -16,7 +16,7 @@ export class TransportCardController {
 
       const transportCard = await transportCardService.createTransportCard({
         ...req.body,
-        userId: user.id,
+        createdById: user.id,
       });
       return res.status(201).json({
         message: 'Transport card created successfully',
@@ -35,7 +35,7 @@ export class TransportCardController {
       const { id } = req.params;
       const { user } = req as AuthenticatedRequest;
 
-      await transportCardService.deleteTransportCard(id as UUID, { userId: user.id });
+      await transportCardService.deleteTransportCard(id as UUID, { createdById: user.id });
 
       return res.status(204).json({
         message: 'Transport card deleted successfully',
@@ -55,7 +55,7 @@ export class TransportCardController {
 
       const transportCard = await transportCardService.updateTransportCard(
         id as UUID,
-        { ...req.body, userId: user.id }
+        { ...req.body, createdById: user.id }
       );
       
       return res.status(200).json({

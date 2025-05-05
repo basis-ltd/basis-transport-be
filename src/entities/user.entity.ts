@@ -90,6 +90,6 @@ export class User extends AbstractEntity {
   userRoles: UserRole[];
 
   // TRANSPORT CARDS
-  @OneToMany(() => TransportCard, (transportCard) => transportCard.user)
+  @OneToMany(() => TransportCard, (transportCard) => transportCard.createdBy)
   transportCards: TransportCard[];
 }
